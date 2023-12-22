@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3CC0C1C8-C7D2-42EC-9B7A-CE0A2A40F50F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftTouch.UI", "src\SoftTouch.UI\SoftTouch.UI.csproj", "{D065C1C0-235B-4C5B-9C87-572A376685BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftTouch.UI.Flexbox", "src\SoftTouch.UI.Flexbox\SoftTouch.UI.Flexbox.csproj", "{3AF58312-D793-4CFA-9F69-50D50F9D2075}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftTouch.UI.Example", "src\SoftTouch.UI.Example\SoftTouch.UI.Example.csproj", "{B68F64D7-621C-4930-AF25-914A4D330FD1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D065C1C0-235B-4C5B-9C87-572A376685BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D065C1C0-235B-4C5B-9C87-572A376685BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D065C1C0-235B-4C5B-9C87-572A376685BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D065C1C0-235B-4C5B-9C87-572A376685BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AF58312-D793-4CFA-9F69-50D50F9D2075}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AF58312-D793-4CFA-9F69-50D50F9D2075}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AF58312-D793-4CFA-9F69-50D50F9D2075}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AF58312-D793-4CFA-9F69-50D50F9D2075}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B68F64D7-621C-4930-AF25-914A4D330FD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B68F64D7-621C-4930-AF25-914A4D330FD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B68F64D7-621C-4930-AF25-914A4D330FD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B68F64D7-621C-4930-AF25-914A4D330FD1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D065C1C0-235B-4C5B-9C87-572A376685BD} = {3CC0C1C8-C7D2-42EC-9B7A-CE0A2A40F50F}
+		{3AF58312-D793-4CFA-9F69-50D50F9D2075} = {3CC0C1C8-C7D2-42EC-9B7A-CE0A2A40F50F}
+		{B68F64D7-621C-4930-AF25-914A4D330FD1} = {3CC0C1C8-C7D2-42EC-9B7A-CE0A2A40F50F}
+	EndGlobalSection
+EndGlobal
