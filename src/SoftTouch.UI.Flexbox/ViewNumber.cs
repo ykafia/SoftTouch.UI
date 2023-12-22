@@ -22,4 +22,6 @@ public record struct ViewNumber(double Value, ViewNumberKind Kind)
             string v => new(double.Parse(v),ViewNumberKind.Number)
         };
     }
+    public static implicit operator ViewNumber(double s)
+        => new(s, ViewNumberKind.Number);
 }

@@ -1,14 +1,18 @@
 ﻿namespace SoftTouch.UI.Flexbox;
 
-public class Tree<T>()
+public abstract class Tree()
+{
+    public Tree? Parent { get; set; }
+    public Tree? Next { get; set; }
+    public Tree? Prev { get; set; }
+    public Tree? FirstChild { get; set; }
+    public Tree? LastChild { get; set; }
+}
+
+public class Tree<T>() : Tree
 {
     public T? Value { get; set; }
-    public Tree<T>? Parent { get; set; }
-    public Tree<T>? Next { get; set; }
-    public Tree<T>? Prev { get; set; }
-    public Tree<T>? FirstChild { get; set; }
-    public Tree<T>? LastChild { get; set; }
-
+    
     public Tree<T> AddChild(Tree<T> node)
     {
         if(FirstChild is null)
