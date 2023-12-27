@@ -12,6 +12,7 @@ public abstract class FixedView
 
 public class TextView : FixedView
 {
+    public string Text => TextStyle.Text;
     public TextStyle TextStyle { get; set; }
 }
 

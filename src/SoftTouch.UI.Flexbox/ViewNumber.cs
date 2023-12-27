@@ -1,3 +1,4 @@
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
@@ -24,4 +25,7 @@ public record struct ViewNumber(double Value, ViewNumberKind Kind)
     }
     public static implicit operator ViewNumber(double s)
         => new(s, ViewNumberKind.Number);
+
+    public static implicit operator float(ViewNumber vn) => (float)vn.Value;
+
 }

@@ -10,10 +10,12 @@ public abstract class Tree()
 }
 
 public class Tree<T>() : Tree
+    where T : FixedView
 {
     public T? Value { get; set; }
     
-    public Tree<T> AddChild(Tree<T> node)
+    public Tree<TView> AddChild<TView>(Tree<TView> node)
+        where TView : FixedView
     {
         if(FirstChild is null)
         {

@@ -12,25 +12,51 @@ public class QueueNode<T>(T data, QueueNode<T>? prev = null, QueueNode<T>? next 
 
 public class FlexQueue<T>()
 {
-    Queue<QueueNode<T>> queue = new();
+    List<QueueNode<T>> queue = new();
+
+    public int Count => queue.Count;
 
     public void Enqueue(T value)
     {
         var node = new QueueNode<T>(value);
 
-        var last = queue.Last();
+        var last = queue.LastOrDefault();
         if (last != null)
         {
             last.Next = node;
             node.Prev = last;
         }
-        queue.Enqueue(node);
+        queue.Insert(0, node);
     }
 
-    public void Dequeue()
+    public T? DequeueFront()
     {
-        var deq = queue.Dequeue();
-        if(deq.Prev != null)
-            deq.Prev.Next = null;
+        if(queue.Count > 0)
+        {
+            var deq = queue[^1];
+            queue.RemoveAt(queue.Count - 1);
+            return deq.Data;
+        }
+        return default;
+    }
+    public T? Dequeue()
+    {
+        if(queue.Count > 0)
+        {
+            var deq = queue[0];
+            if (deq.Prev != null)
+                deq.Prev.Next = null;
+            return deq.Data;
+        }
+        return default;
+    }
+    public Enumerator GetEnumerator() => new(queue);
+
+    public ref struct Enumerator(List<QueueNode<T>> queue)
+    {
+        List<QueueNode<T>>.Enumerator queue = queue.GetEnumerator();
+
+        public T Current => queue.Current.Data;
+        public bool MoveNext() => queue.MoveNext();
     }
 }
