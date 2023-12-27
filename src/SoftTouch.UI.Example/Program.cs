@@ -4,7 +4,7 @@ using SoftTouch.UI.Flexbox;
 
 var text = new TextView()
 {
-    TextStyle = new("Hello world!", 24, "#000"),
+    TextStyle = new("Hello world!", 24, "#FFF"),
     BackgroundColor = "#000",
     Height = 24,
     Width = 128,

@@ -11,7 +11,6 @@ public sealed class FlexTree
     public Dictionary<FixedView, FlexNode> Lookup { get; } = [];
     public Dictionary<FlexNode, List<FlexNode>> Adjacency { get; } = [];
 
-
     public void AddChild(FixedView? parent, FixedView child)
     {
         if (parent is not null && child != null)
@@ -33,7 +32,9 @@ public sealed class FlexTree
             throw new NotImplementedException();
     }
 
-    public IEnumerable<FixedView> GetEnumerator()
+    public IEnumerator<FixedView> GetEnumerator() => BreadthFirstOrder().OrderBy(x => x.ZIndex).GetEnumerator();
+
+    public IEnumerable<FixedView> BreadthFirstOrder()
     {
         if (Root == null)
         {

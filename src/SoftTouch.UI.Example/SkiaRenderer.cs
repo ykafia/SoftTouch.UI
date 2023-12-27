@@ -24,7 +24,7 @@ public class SkiaRenderer : IFlexRenderer
         Canvas.Clear(SKColor.Parse("#FFF"));
 
         
-        foreach(var view in RenderTree.GetEnumerator().OrderBy(x => x.ZIndex))
+        foreach(var view in RenderTree)
         {
             if(view is BoxView bv)
             {
