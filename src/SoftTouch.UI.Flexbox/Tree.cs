@@ -1,34 +1,59 @@
-﻿namespace SoftTouch.UI.Flexbox;
+﻿using System.Diagnostics.CodeAnalysis;
 
-public abstract class Tree()
-{
-    public Tree? Parent { get; set; }
-    public Tree? Next { get; set; }
-    public Tree? Prev { get; set; }
-    public Tree? FirstChild { get; set; }
-    public Tree? LastChild { get; set; }
-}
+namespace SoftTouch.UI.Flexbox;
 
-public class Tree<T>() : Tree
-    where T : FixedView
+
+public sealed record FlexNode(FixedView Value, FlexNode Parent, FlexTree Tree);
+
+public sealed class FlexTree
 {
-    public T? Value { get; set; }
-    
-    public Tree<TView> AddChild<TView>(Tree<TView> node)
-        where TView : FixedView
+    public FlexNode? Root { get; private set; }
+    public Dictionary<FixedView, FlexNode> Lookup { get; } = [];
+    public Dictionary<FlexNode, List<FlexNode>> Adjacency { get; } = [];
+
+
+    public void AddChild(FixedView? parent, FixedView child)
     {
-        if(FirstChild is null)
+        if (parent is not null && child != null)
         {
-            FirstChild = node;
-            LastChild = node;
+            var childNode = new FlexNode(child, Lookup[parent], this);
+            Lookup[child] = childNode;
+            Adjacency[Lookup[parent]].Add(childNode);
+            Adjacency[childNode] = [];
+            child.ZIndex = parent.ZIndex + 1;
+
         }
-        else{
-            if(LastChild is null)
-                throw new Exception("Last child must be set");
-            node.Prev = LastChild;
-            LastChild.Next = node;
-            LastChild = node;
+        else if (parent is null && Root == null && child != null)
+        {
+            Root = new(child, null!, this);
+            Adjacency[Root] = [];
+            Lookup[child] = Root;
         }
-        return node;
+        else 
+            throw new NotImplementedException();
+    }
+
+    public IEnumerable<FixedView> GetEnumerator()
+    {
+        if (Root == null)
+        {
+            yield break;
+        }
+
+        Queue<FlexNode> queue = new();
+        queue.Enqueue(Root);
+
+        while (queue.Count > 0)
+        {
+            FlexNode current = queue.Dequeue();
+            yield return current.Value;
+
+            foreach (FlexNode child in Adjacency[current])
+            {
+                queue.Enqueue(child);
+            }
+        }
     }
 }
+
+
