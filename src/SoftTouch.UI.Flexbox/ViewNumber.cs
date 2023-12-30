@@ -316,7 +316,14 @@ public record struct ViewNumber(double Value, ViewNumberKind Kind) : INumber<Vie
 
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
     {
-        throw new NotImplementedException();
+        var str = Value.ToString();
+        charsWritten = 0;
+        foreach (var e in str)
+        {
+            destination[charsWritten] = e;
+            charsWritten += 1;
+        }
+        return charsWritten > 0;
     }
 
     int IComparable.CompareTo(object? obj)
@@ -341,7 +348,14 @@ public record struct ViewNumber(double Value, ViewNumberKind Kind) : INumber<Vie
 
     bool ISpanFormattable.TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
     {
-        throw new NotImplementedException();
+        var str = Value.ToString();
+        charsWritten = 0;
+        foreach (var e in str)
+        {
+            destination[charsWritten] = e;
+            charsWritten += 1;
+        }
+        return charsWritten > 0;
     }
 
     public static ViewNumber operator +(ViewNumber value)

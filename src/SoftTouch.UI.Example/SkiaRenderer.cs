@@ -21,12 +21,13 @@ public class SkiaRenderer : IFlexRenderer
     public void Render()
     {
         Canvas.Clear(SKColor.Parse("#FFF"));
-
+        RenderTree.Update();
         
         foreach(var view in RenderTree)
         {
-            if(view is BoxView bv)
+            if(view is BoxElement bv)
             {
+                Console.WriteLine($"Box {bv.X} {bv.Y} | {bv.Width} {bv.Height}");
                 var rect = new SKRect((float?)bv.X ?? 0, (float?)bv.Y ?? 0, (float?)(bv.X + bv.Width) ?? 0, (float?)(bv.Y + bv.Height) ?? 0);
                 var paint = new SKPaint()
                 {
@@ -34,7 +35,7 @@ public class SkiaRenderer : IFlexRenderer
                 };
                 Canvas.DrawRect(rect, paint);
             }
-            else if(view is TextView tv)
+            else if(view is TextElement tv)
             {
                 Canvas.DrawText(tv.Text, new((float?)tv.X ?? 0,(float?)tv.Y ?? 0),new(){
                     Color = SKColor.Parse(tv.Color),

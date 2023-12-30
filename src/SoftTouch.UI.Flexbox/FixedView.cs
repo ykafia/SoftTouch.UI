@@ -1,23 +1,28 @@
 ﻿namespace SoftTouch.UI.Flexbox;
 
-public abstract class FixedView
+public abstract class FlexElement
 {
-    public ViewNumber? X { get; set; }
-    public ViewNumber? Y { get; set; }
+    public ViewNumber? X { get; set; } = 0;
+    public ViewNumber? Y { get; set; } = 0;
     public ViewNumber? Width { get; set; }
     public ViewNumber? Height { get; set; }
     public int ZIndex { get; set; }
     public string? BackgroundColor { get; set; }
 }
 
-public class TextView : FixedView
+public class TextElement(string text = "", ViewNumber? fontSize = null, string color = "#000") : FlexElement
 {
-    public string Text { get; set; } = "";
-    public ViewNumber FontSize { get; set; }
-    public string Color { get; set; } = "#000";
+    public string Text { get; set; } = text;
+    public ViewNumber FontSize { get; set; } = fontSize ?? 12;
+    public string Color { get; set; } = color;
+
+    public override string ToString()
+    {
+        return $"[color : {Color}, size : {FontSize}] {Text}";
+    }
 }
 
-public class BoxView : FixedView
+public class BoxElement : FlexElement
 {
     public FlexDirection? FlexDirection { get; set; }
     public JustifyContent? JustifyContent { get; set; }
@@ -45,6 +50,12 @@ public class BoxView : FixedView
     public ViewNumber? MarginRight { get; set; }
     public ViewNumber? MarginTop { get; set; }
     public ViewNumber? MarginBottom { get; set; }
+
+
+    public override string ToString()
+    {
+        return $"[color : {BackgroundColor}] Box";
+    }
 }
 
 
