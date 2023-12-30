@@ -27,7 +27,9 @@ public class SkiaRenderer : IFlexRenderer
         {
             if(view is BoxElement bv)
             {
-                Console.WriteLine($"Box {bv.X} {bv.Y} | {bv.Width} {bv.Height}");
+                #if DEBUG
+                Console.WriteLine($"{bv} {{{bv.X}, {bv.Y}}} | w{bv.Width} h{bv.Height}");
+                #endif
                 var rect = new SKRect((float?)bv.X ?? 0, (float?)bv.Y ?? 0, (float?)(bv.X + bv.Width) ?? 0, (float?)(bv.Y + bv.Height) ?? 0);
                 var paint = new SKPaint()
                 {
@@ -37,6 +39,9 @@ public class SkiaRenderer : IFlexRenderer
             }
             else if(view is TextElement tv)
             {
+                #if DEBUG
+                Console.WriteLine($"{tv} {tv.X} {tv.Y} | {tv.Text}");
+                #endif
                 Canvas.DrawText(tv.Text, new((float?)tv.X ?? 0,(float?)tv.Y ?? 0),new(){
                     Color = SKColor.Parse(tv.Color),
                     TextSize = (float?)tv.FontSize ?? 0,

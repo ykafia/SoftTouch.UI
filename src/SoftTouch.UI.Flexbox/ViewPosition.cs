@@ -2,7 +2,7 @@
 
 public enum ViewPosition
 {
-    None,
+    Static,
     Absolute,
     Relative
 }

@@ -11,20 +11,3 @@ public abstract record FlexView
 
 public record BoxView(BoxElement Box, List<FlexView> Children) : FlexView;
 public record TextView(TextElement Text) : FlexView;
-
-
-public static class TrySomething
-{
-    public static void Hello()
-    {
-        var v = new BoxView(
-            new(),
-            [
-                new BoxView(
-                    new(),
-                    []
-                )
-            ]
-        );
-    }
-}
