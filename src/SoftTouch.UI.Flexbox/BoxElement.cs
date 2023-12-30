@@ -137,6 +137,8 @@ public class BoxElement : FlexElement
         MarginRight = marginRight;
         MarginTop = marginTop;
         MarginBottom = marginBottom;
+        Margin = margin;
+        Padding = padding;
     }
     public override string ToString()
     {

@@ -119,7 +119,7 @@ public sealed class FlexTree
                         {
                             
                             if (cbv.FlexDirection == FlexDirection.Row && cbv.Position == ViewPosition.Relative)
-                                e.Value.Width = (e.Value.Width ?? 0) + (cbv.Width ?? 0) + ((cbv.MarginLeft ?? 0)) + ((cbv.MarginRight ?? 0));
+                                e.Value.Width = (e.Value.Width ?? 0) + (cbv.Width ?? 0) + (cbv.MarginLeft ?? 0) + (cbv.MarginRight ?? 0);
 
                             if (cbv.FlexDirection == FlexDirection.Column && cbv.Position == ViewPosition.Relative)
                                 e.Value.Width =
@@ -155,10 +155,12 @@ public sealed class FlexTree
                                 e.Value.Height = (e.Value.Height ?? 0) + (cbv.Height ?? 0) + (cbv.Top ?? 0) + (cbv.Bottom ?? 0);
 
                             if (cbv.FlexDirection == FlexDirection.Row && cbv.Position == ViewPosition.Relative)
-                                e.Value.Height = ViewNumber.MaxMagnitude(
-                                    e.Value.Height ?? 0,
-                                    (cbv.Height ?? 0) + (cbv.Top ?? 0) + (cbv.Bottom ?? 0)
-                                );
+                                e.Value.Height =
+                                    (e.Value.Height ?? 0)
+                                    + ViewNumber.MaxMagnitude(
+                                        e.Value.Height ?? 0,
+                                        (cbv.Height ?? 0) + (cbv.Top ?? 0) + (cbv.Bottom ?? 0)
+                                    );
                         }
                         if (cbv.Position == ViewPosition.Relative)
                             childrenCount += 1;
@@ -374,13 +376,13 @@ public sealed class FlexTree
                                 && ebv.JustifyContent != JustifyContent.SpaceAround
                                 && ebv.JustifyContent != JustifyContent.SpaceEvenly
                             )
-                                cbv.Height = (cbv.Flex / totalFlex) * availableHeight;
+                                cbv.Height = cbv.Flex / totalFlex * availableHeight;
                         }
                     }
                 }
 
-                ebv.X += (ebv.MarginLeft ?? 0);
-                ebv.Y += (ebv.MarginTop ?? 0);
+                ebv.X += ebv.MarginLeft ?? 0;
+                ebv.Y += ebv.MarginTop ?? 0;
 
                 // Determine positions.
                 var x = ebv.X + (ebv.PaddingLeft ?? 0);

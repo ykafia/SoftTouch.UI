@@ -10,7 +10,7 @@ var view = new BoxView(
         flex : 1,
         flexDirection : FlexDirection.Row,
         position: ViewPosition.Relative,
-        padding: 10
+        justifyContent : JustifyContent.Center
     ),
     [
         new BoxElement(
@@ -18,13 +18,15 @@ var view = new BoxView(
             backgroundColor : "#330",
             width : 200,
             height : 100,
-            alignSelf : FlexAlignment.Stretch
+            alignSelf : FlexAlignment.Stretch,
+            margin: 25
         ),
         new BoxElement(
             id : "child1",
             backgroundColor : "#FF0",
             width : 200,
-            height : 100
+            height : 100,
+            margin: 25
         )
     ]
 );
