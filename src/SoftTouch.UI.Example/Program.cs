@@ -19,14 +19,17 @@ var view = new BoxView(
             width : 200,
             height : 100,
             alignSelf : FlexAlignment.Stretch,
-            margin: 25
+            marginTop : 10,
+            marginLeft : 10
+
         ),
         new BoxElement(
             id : "child1",
             backgroundColor : "#FF0",
             width : 200,
             height : 100,
-            margin: 25
+            marginTop : 10,
+            marginLeft : 10
         )
     ]
 );

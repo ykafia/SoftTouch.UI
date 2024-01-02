@@ -198,6 +198,7 @@ public sealed class FlexTree
                 // For left right first
                 if (ebv.Width is not null && ebv.Width?.Kind == ViewNumberKind.Percentage)
                     ebv.Width = ebv.Width?.Percentage * (parent?.Width ?? 0);
+                // If we have left and right, position should be translated in those directions
                 if (
                     ebv.Left is not null
                     && ebv.Right is not null
@@ -205,7 +206,7 @@ public sealed class FlexTree
                 )
                 {
                     ebv.X = (parent?.X ?? 0) + (ebv.Left ?? 0);
-                    ebv.Width = (parent?.Width ?? 0) - ebv.Left - ebv.Right;
+                    ebv.Width = parentWidth - ebv.Left - ebv.Right;
                 }
                 else if (ebv.Left is not null)
                 {
@@ -221,7 +222,7 @@ public sealed class FlexTree
                 }
                 else if (ebv.Position == ViewPosition.Absolute)
                 {
-                    ebv.X = (parent?.X ?? 0);
+                    ebv.X = parent?.X ?? 0;
                 }
                 // Then top bottom
 
@@ -234,7 +235,7 @@ public sealed class FlexTree
                 )
                 {
                     ebv.Y = (parent?.Y ?? 0) + (ebv.Top ?? 0);
-                    ebv.Height = (parent?.Height ?? 0) - (ebv.Top ?? 0) - (ebv.Bottom ?? 0);
+                    ebv.Height = parentHeight - (ebv.Top ?? 0) - (ebv.Bottom ?? 0);
                 }
                 else if (ebv.Top is not null)
                 {
