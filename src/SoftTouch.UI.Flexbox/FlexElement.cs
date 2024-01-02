@@ -11,8 +11,8 @@ public abstract class FlexElement(
 )
 {
     public string? Id { get; set; } = id;
-    public ViewNumber X { get; set; } = x ?? 0; 
-    public ViewNumber Y { get; set; } = y ?? 0;
+    public ViewNumber? X { get; set; } = x; 
+    public ViewNumber? Y { get; set; } = y;
     public ViewNumber? Width { get; set; } = width;
     public ViewNumber? Height { get; set; } = height;
     public int ZIndex { get; set; } = zindex ?? 0;

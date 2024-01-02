@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Drawing;
+using System.Runtime.CompilerServices;
 using SkiaSharp;
 using SoftTouch.UI.Flexbox;
 
@@ -15,6 +16,12 @@ public class SkiaRenderer : IFlexRenderer
     {
         RenderTree = tree;
         ImageInfo = new(width, height, SKColorType.Rgba8888, SKAlphaType.Premul);
+        Surface = SKSurface.Create(ImageInfo);
+    }
+    public SkiaRenderer(BoxView box)
+    {
+        ImageInfo = new((int)(box.Box.Width ?? 0) , (int)(box.Box.Height ?? 0), SKColorType.Rgba8888, SKAlphaType.Premul);
+        RenderTree = new(box);
         Surface = SKSurface.Create(ImageInfo);
     }
 
@@ -42,7 +49,7 @@ public class SkiaRenderer : IFlexRenderer
                 #if DEBUG
                 Console.WriteLine($"{tv} {tv.X} {tv.Y} | {tv.Text}");
                 #endif
-                Canvas.DrawText(tv.Text, new((float?)tv.X ?? 0,(float?)tv.Y ?? 0),new(){
+                Canvas.DrawText(tv.Text, new((float)tv.X,(float)(tv.Y + tv.FontSize)),new(){
                     Color = SKColor.Parse(tv.Color),
                     TextSize = (float?)tv.FontSize ?? 0,
                 });

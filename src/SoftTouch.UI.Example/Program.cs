@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using SixLabors.Fonts;
+using SkiaSharp;
 using SoftTouch.UI.Example;
 using SoftTouch.UI.Flexbox;
 
@@ -7,32 +8,30 @@ var view = new BoxView(
     new BoxElement(
         id : "parent",
         backgroundColor : "#0FF",
-        flex : 1,
+        grow : 1,
         flexDirection : FlexDirection.Row,
-        position: ViewPosition.Relative,
-        justifyContent : JustifyContent.Center
+        x: 0,
+        y: 0,
+        width: 1024,
+        height: 1024
     ),
     [
-        new BoxElement(
-            id : "child0",
-            backgroundColor : "#330",
-            width : 200,
-            height : 100,
-            alignSelf : FlexAlignment.Stretch,
-            marginTop : 10,
-            marginLeft : 10
+        (
+            new BoxElement(
+                id : "child0",
+                backgroundColor : "#330",
+                position: FlexPosition.Absolute,
+                left: 10,
+                right: 100,
+                top: 10,
+                bottom: 40
 
-        ),
-        new BoxElement(
-            id : "child1",
-            backgroundColor : "#FF0",
-            width : 200,
-            height : 100,
-            marginTop : 10,
-            marginLeft : 10
+            ),
+            []
         )
     ]
 );
-var renderer = new SkiaRenderer(new(view));
+
+var renderer = new SkiaRenderer(view);
 renderer.Render();
 renderer.SavePng();

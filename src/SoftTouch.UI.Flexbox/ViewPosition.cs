@@ -1,8 +1,7 @@
 ﻿namespace SoftTouch.UI.Flexbox;
 
-public enum ViewPosition
+public enum FlexPosition
 {
-    Static,
-    Absolute,
-    Relative
+    Relative,
+    Absolute
 }

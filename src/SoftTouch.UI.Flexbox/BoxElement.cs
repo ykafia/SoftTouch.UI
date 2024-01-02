@@ -8,8 +8,8 @@ public class BoxElement : FlexElement
     public JustifyContent? JustifyContent { get; set; }
     public FlexAlignment? AlignItems { get; set; }
     public FlexAlignment? AlignSelf { get; set; }
-    public ViewNumber? Flex { get; set; }
-    public ViewPosition? Position { get; set; }
+    public ViewNumber? Grow { get; set; }
+    public FlexPosition? Position { get; set; }
     public ViewNumber? Gap { get; set; }
     public string? Display { get; set; }
     public ViewNumber? Top { get; set; }
@@ -97,8 +97,8 @@ public class BoxElement : FlexElement
         JustifyContent? justifyContent = null,
         FlexAlignment? alignItems = null,
         FlexAlignment? alignSelf = null,
-        ViewNumber? flex = null,
-        ViewPosition? position = null,
+        ViewNumber? grow = null,
+        FlexPosition? position = null,
         ViewNumber? gap = null,
         string? display = null,
         ViewNumber? left = null,
@@ -121,8 +121,8 @@ public class BoxElement : FlexElement
         JustifyContent = justifyContent;
         AlignItems = alignItems;
         AlignSelf = alignSelf;
-        Flex = flex;
-        Position = position ?? ViewPosition.Relative;
+        Grow = grow;
+        Position = position ?? FlexPosition.Relative;
         Gap = gap;
         Display = display;
         Left = left;
