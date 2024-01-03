@@ -87,59 +87,58 @@ public sealed partial class FlexTree
 
         while (forwardQueue.Count > 0)
         {
-            var e = forwardQueue.Dequeue() ?? throw new NullReferenceException();
-            ViewNumber totalFlex = 0;
+            var element = forwardQueue.Dequeue() ?? throw new NullReferenceException();
             var childrenCount = 0;
 
-            var parent = e.Parent?.Value;
-            if (parent is not null && e.Parent is not null)
+
+            if (element.Value is BoxElement e)
             {
-                if (e.Value is BoxElement ebv)
+                var parent = element.Parent?.Value;
+                if (parent is not null && element.Parent is not null)
                 {
-                    if (ebv.Grow < 0)
+                    if (e.Grow < 0)
                         throw new Exception("Flex value cannot be negative");
 
                     // Resolving flex properties
 
-                    ResolveFlexProperties(e, e.Parent);
+                    ResolveFlexProperties(element, element.Parent);
 
 
-                    ResolveAlignSelf(e, e.Parent);
+                    ResolveAlignSelf(element, element.Parent);
 
                     // setting up the percentage size 
-                    foreach (var child in Adjacency[e])
+                    foreach (var child in Adjacency[element])
                     {
                         if (child.Value.Width is not null && child.Value.Width?.Kind == ViewNumberKind.Percentage)
-                            child.Value.Width = child.Value.Width?.Percentage * e.Value.Width;
+                            child.Value.Width = child.Value.Width?.Percentage * element.Value.Width;
                         if (child.Value.Height is not null && child.Value.Height?.Kind == ViewNumberKind.Percentage)
-                            child.Value.Height = child.Value.Height?.Percentage * e.Value.Height;
+                            child.Value.Height = child.Value.Height?.Percentage * element.Value.Height;
                     }
                     // ZIndex
-                    e.Value.ZIndex = parent?.ZIndex ?? 0;
-
-                    ResolveSpaceDistribution(e, e.Parent, totalFlex, out ViewNumber availableWidth, out ViewNumber availableHeight, ref childrenCount);
-
-                    ebv.X += ebv.MarginLeft ?? 0;
-                    ebv.Y += ebv.MarginTop ?? 0;
-
-                    // Determine positions.
-                    var x = ebv.X + (ebv.PaddingLeft ?? 0);
-                    var y = ebv.Y + (ebv.PaddingTop ?? 0);
-
-                    ResolveJustifyContent(e, e.Parent, in availableWidth, in availableHeight, ref childrenCount);
-
-                    ResolveAlignItems(e, e.Parent);
-
-                    
-                    ebv.X = Math.Round((double)ebv.X);
-                    ebv.Y = Math.Round((double)ebv.Y);
-                    ebv.Width = Math.Round((double)(ebv.Width ?? 0));
-                    ebv.Height = Math.Round((double)(ebv.Height ?? 0));
+                    element.Value.ZIndex = parent?.ZIndex ?? 0;
                 }
-            }
+                
+                ResolveSpaceDistribution(element, out ViewNumber availableWidth, out ViewNumber availableHeight, ref childrenCount);
+                e.X += e.MarginLeft ?? 0;
+                e.Y += e.MarginTop ?? 0;
 
+
+                // Determine positions.
+
+                ResolveJustifyContent(element, in availableWidth, in availableHeight, ref childrenCount);
+
+                ResolveAlignItems(element);
+
+
+                e.X = Math.Round((double)e.X);
+                e.Y = Math.Round((double)e.Y);
+                e.Width = Math.Round((double)(e.Width ?? 0));
+                e.Height = Math.Round((double)(e.Height ?? 0));
+            }
         }
+
     }
+
 
     public IEnumerator<FlexElement> GetEnumerator() => BreadthFirstOrder().OrderBy(x => x.ZIndex).GetEnumerator();
 

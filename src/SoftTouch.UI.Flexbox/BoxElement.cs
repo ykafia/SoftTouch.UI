@@ -121,7 +121,7 @@ public class BoxElement : FlexElement
         JustifyContent = justifyContent;
         AlignItems = alignItems;
         AlignSelf = alignSelf;
-        Grow = grow;
+        Grow = grow ?? 0;
         Position = position ?? FlexPosition.Relative;
         Gap = gap;
         Display = display;

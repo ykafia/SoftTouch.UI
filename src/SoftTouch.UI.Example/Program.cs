@@ -13,22 +13,14 @@ var view = new BoxView(
         x: 0,
         y: 0,
         width: 1024,
-        height: 1024
+        height: 1024,
+        justifyContent: JustifyContent.SpaceAround
     ),
     [
-        (
-            new BoxElement(
-                id : "child0",
-                backgroundColor : "#330",
-                position: FlexPosition.Absolute,
-                left: 10,
-                right: 100,
-                top: 10,
-                bottom: 40
-
-            ),
-            []
-        )
+        new BoxElement(id: "1",width: 100, height: 100, backgroundColor: "#AAA"),
+        new BoxElement(id: "2",width: 100, height: 100, backgroundColor: "#CCC"),
+        new BoxElement(id: "3",width: 100, height: 100, backgroundColor: "#DDD"),
+        new BoxElement(id: "4",width: 100, height: 100, backgroundColor: "#FFF")
     ]
 );
 

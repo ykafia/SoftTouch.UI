@@ -134,292 +134,316 @@ public partial class FlexTree
                 (FlexPosition.Absolute, null, null, null, _) => 0,
                 _ => box.Height,
             };
+
+            box.X ??= 0;
+            box.Y ??= 0;
         }
     }
 
     void ResolveAlignSelf(FlexNode element, FlexNode parent)
     {
         // Resolving Align self
-
-        //
-
-
-
-        // if (ebv.Position == ViewPosition.Absolute)
-        // {
-        //     if (parent is BoxElement pbv && pbv.FlexDirection == FlexDirection.Row)
-        //     {
-        //         if (ebv.AlignSelf == FlexAlignment.Center)
-        //             ebv.Y += (ebv.Height ?? 0) / 2 - (ebv.Height ?? 0) / 2;
-
-        //         if (ebv.AlignSelf == FlexAlignment.FlexEnd)
-        //             ebv.Y +=
-        //                 (parent?.Height ?? 0) - (ebv.Height ?? 0) - (pbv.PaddingBottom ?? 0) - (pbv.PaddingTop ?? 0);
-
-        //         if (ebv.AlignSelf == FlexAlignment.Stretch)
-        //             ebv.Height =
-        //                 pbv.Height -
-        //                 pbv.PaddingBottom -
-        //                 pbv.PaddingTop;
-        //     }
-        //     if (parent is BoxElement pbv2 && pbv2.FlexDirection == FlexDirection.Column)
-        //     {
-        //         if (ebv.AlignSelf == FlexAlignment.Center)
-        //             ebv.X += (ebv.Width ?? 0) / 2 - (ebv.Width ?? 0) / 2;
-
-        //         if (ebv.AlignSelf == FlexAlignment.FlexEnd)
-        //             ebv.X +=
-        //                 (pbv2.Width ?? 0) - (ebv.Width ?? 0) - (pbv2.PaddingLeft ?? 0) - (pbv2.PaddingRight ?? 0);
-
-        //         if (ebv.AlignSelf == FlexAlignment.Stretch)
-        //             ebv.Width =
-        //                 pbv2.Width -
-        //                 pbv2.PaddingLeft -
-        //                 pbv2.PaddingRight;
-        //     }
-        // }
+        if (element.Value is BoxElement e && parent.Value is BoxElement p)
+        {
+            e.Y = (e.Position, p.FlexDirection, e.AlignSelf) switch
+            {
+                (FlexPosition.Absolute, FlexDirection.Row, FlexAlignment.Center) => (e.Y ?? 0) + (p.Height ?? 0) / 2 - (e.Height ?? 0 / 2),
+                (FlexPosition.Absolute, FlexDirection.Row, FlexAlignment.FlexEnd) => (e.Y ?? 0) + (p.Height ?? 0) - (e.Height ?? 0 / 2) - (p.PaddingBottom ?? 0) - (p.PaddingTop ?? 0),
+                _ => e.Y
+            };
+            if (e.Position == FlexPosition.Absolute && p.FlexDirection == FlexDirection.Row && e.AlignSelf == FlexAlignment.Stretch)
+                e.Height = (p.Height ?? 0) + (p.PaddingBottom ?? 0) + (p.PaddingTop ?? 0);
+            e.X = (e.Position, p.FlexDirection, e.AlignSelf) switch
+            {
+                (FlexPosition.Absolute, FlexDirection.Column, FlexAlignment.Center) => (e.X ?? 0) + (p.Width ?? 0) / 2 - (e.Width ?? 0 / 2),
+                (FlexPosition.Absolute, FlexDirection.Column, FlexAlignment.FlexEnd) => (e.X ?? 0) + (p.Width ?? 0) - (e.Width ?? 0 / 2) - (p.PaddingLeft ?? 0) - (p.PaddingRight ?? 0),
+                _ => e.X
+            };
+            if (e.Position == FlexPosition.Absolute && p.FlexDirection == FlexDirection.Column && e.AlignSelf == FlexAlignment.Stretch)
+                e.Width = (p.Width ?? 0) + (p.PaddingLeft ?? 0) + (p.PaddingRight ?? 0);
+        }
     }
 
 
-    void ResolveSpaceDistribution(FlexNode element, FlexNode parent, ViewNumber totalFlex, out ViewNumber availableWidth, out ViewNumber availableHeight, ref int childrenCount)
+    void ResolveSpaceDistribution(FlexNode element, out ViewNumber availableWidth, out ViewNumber availableHeight, ref int childrenCount)
     {
         // Distribute space
-
+        ViewNumber totalFlex = 0;
         availableWidth = element.Value.Width ?? 0;
         availableHeight = element.Value.Height ?? 0;
+        if (element.Value is BoxElement e)
+        {
+            foreach (var child in Adjacency[element])
+            {
+                if (child.Value is BoxElement c)
+                {
+                    if (c.Position == FlexPosition.Relative)
+                    {
+                        childrenCount += 1;
+                        if (e.FlexDirection == FlexDirection.Row && c.Grow == 0)
+                        {
+                            availableWidth -= (c.Width ?? 0) +
+                                (c.MarginLeft, c.MarginRight) switch
+                                {
+                                    (ViewNumber ml, ViewNumber mr) => ml + mr,
+                                    (ViewNumber ml, null) => ml,
+                                    (null, ViewNumber mr) => mr,
+                                    (_, _) => 0
 
-        // foreach (var child in Adjacency[e])
-        // {
-        //     if (child.Value is BoxElement cbv)
-        //     {
-        //         if (cbv.Position == ViewPosition.Relative)
-        //             childrenCount += 1;
-        //         if (
-        //             ebv.FlexDirection == FlexDirection.Row
-        //             && cbv.Grow is null
-        //             && cbv.Position == ViewPosition.Relative
-        //         )
-        //         {
-        //             availableWidth -= cbv.Width ?? 0;
-        //         }
-        //         if (
-        //             ebv.FlexDirection == FlexDirection.Column
-        //             && cbv.Grow is null
-        //             && cbv.Position == ViewPosition.Relative
-        //         )
-        //         {
-        //             availableHeight -= cbv.Height ?? 0;
-        //         }
+                                };
+                        }
+                        if (e.FlexDirection == FlexDirection.Column && c.Grow == 0 && c.Position == FlexPosition.Relative)
+                            availableHeight -= (c.Height ?? 0) +
+                                (c.MarginTop, c.MarginBottom) switch
+                                {
+                                    (ViewNumber mt, ViewNumber mr) => mt + mr,
+                                    (ViewNumber mt, null) => mt,
+                                    (null, ViewNumber mb) => mb,
+                                    (_, _) => 0
 
-        //         if (ebv.FlexDirection == FlexDirection.Row && cbv.Grow is not null)
-        //             totalFlex += cbv.Grow ?? 0;
-        //         if (ebv.FlexDirection == FlexDirection.Column && cbv.Grow is not null)
-        //             totalFlex += cbv.Grow ?? 0;
-        //     }
-        // }
+                                };
 
-        // availableWidth -=
-        //     (ebv.PaddingLeft ?? 0) +
-        //     (ebv.PaddingRight ?? 0) +
-        //     (ebv.FlexDirection == FlexDirection.Row &&
-        //     ebv.JustifyContent != JustifyContent.SpaceBetween &&
-        //     ebv.JustifyContent != JustifyContent.SpaceAround &&
-        //     ebv.JustifyContent != JustifyContent.SpaceEvenly
-        //         ? (childrenCount - 1) * (ebv.Gap ?? 0)
-        //         : 0);
-        // availableHeight -=
-        //     (ebv.PaddingTop ?? 0) +
-        //     (ebv.PaddingBottom ?? 0) +
-        //     (ebv.FlexDirection == FlexDirection.Column &&
-        //     ebv.JustifyContent != JustifyContent.SpaceBetween &&
-        //     ebv.JustifyContent != JustifyContent.SpaceAround &&
-        //     ebv.JustifyContent != JustifyContent.SpaceEvenly
-        //         ? (childrenCount - 1) * (ebv.Gap ?? 0)
-        //         : 0);
-        // foreach (var child in Adjacency[e])
-        // {
-        //     if (child.Value is BoxElement cbv)
-        //     {
-        //         if (ebv.FlexDirection == FlexDirection.Row)
-        //         {
-        //             if (
-        //                 cbv.Grow is not null
-        //                 && ebv.JustifyContent != JustifyContent.SpaceBetween
-        //                 && ebv.JustifyContent != JustifyContent.SpaceAround
-        //                 && ebv.JustifyContent != JustifyContent.SpaceEvenly
-        //             )
-        //                 cbv.Width = (cbv.Grow / totalFlex) * availableWidth;
-        //         }
-        //         if (ebv.FlexDirection == FlexDirection.Column)
-        //         {
-        //             if (
-        //                 cbv.Grow is not null
-        //                 && ebv.JustifyContent != JustifyContent.SpaceBetween
-        //                 && ebv.JustifyContent != JustifyContent.SpaceAround
-        //                 && ebv.JustifyContent != JustifyContent.SpaceEvenly
-        //             )
-        //                 cbv.Height = cbv.Grow / totalFlex * availableHeight;
-        //         }
-        //     }
-        // }
+                        if (e.FlexDirection == FlexDirection.Row && c.Grow > 0)
+                            totalFlex += c.Grow ?? 0;
+                        if (e.FlexDirection == FlexDirection.Column && c.Grow > 0)
+                            totalFlex += c.Grow ?? 0;
+                    }
+
+
+                }
+            }
+
+            availableWidth -=
+                (e.PaddingLeft ?? 0) +
+                (e.PaddingRight ?? 0) +
+                (e.FlexDirection == FlexDirection.Row &&
+                e.JustifyContent != JustifyContent.SpaceBetween &&
+                e.JustifyContent != JustifyContent.SpaceAround &&
+                e.JustifyContent != JustifyContent.SpaceEvenly
+                    ? (childrenCount - 1) * (e.Gap ?? 0)
+                    : 0);
+            availableHeight -=
+                (e.PaddingTop ?? 0) +
+                (e.PaddingBottom ?? 0) +
+                (e.FlexDirection == FlexDirection.Column &&
+                e.JustifyContent != JustifyContent.SpaceBetween &&
+                e.JustifyContent != JustifyContent.SpaceAround &&
+                e.JustifyContent != JustifyContent.SpaceEvenly
+                    ? (childrenCount - 1) * (e.Gap ?? 0)
+                    : 0);
+            foreach (var child in Adjacency[element])
+            {
+                if (child.Value is BoxElement c)
+                {
+                    if (
+                        e.FlexDirection == FlexDirection.Row && c.Grow > 0
+                        && e.JustifyContent != JustifyContent.SpaceBetween
+                        && e.JustifyContent != JustifyContent.SpaceAround
+                        && e.JustifyContent != JustifyContent.SpaceEvenly
+                        )
+                    {
+                        c.Width = (c.Width ?? 0) + (c.Grow ?? 0) / totalFlex * availableWidth;
+                    }
+
+                    if (
+                        e.FlexDirection == FlexDirection.Column && c.Grow > 0
+                        && e.JustifyContent != JustifyContent.SpaceBetween
+                        && e.JustifyContent != JustifyContent.SpaceAround
+                        && e.JustifyContent != JustifyContent.SpaceEvenly
+                        )
+                    {
+                        c.Height = (c.Height ?? 0) + (c.Grow ?? 0) / totalFlex * availableHeight;
+                    }
+                }
+            }
+        }
     }
 
-    void ResolveJustifyContent(FlexNode element, FlexNode parent, in ViewNumber availableWidth, in ViewNumber availableHeight, ref int childrenCount)
+    void ResolveJustifyContent(FlexNode element, in ViewNumber availableWidth, in ViewNumber availableHeight, ref int childrenCount)
     {
 
-        // Justify content
-        // if (ebv.FlexDirection == FlexDirection.Row)
-        // {
-        //     x += ebv.JustifyContent switch
-        //     {
-        //         JustifyContent.Center => availableWidth / 2,
-        //         JustifyContent.FlexEnd => availableWidth,
-        //         _ => 0
-        //     };
-        // }
-        // if (ebv.FlexDirection == FlexDirection.Column)
-        // {
-        //     y += ebv.JustifyContent switch
-        //     {
-        //         JustifyContent.Center => availableHeight / 2,
-        //         JustifyContent.FlexEnd => availableHeight,
-        //         _ => 0
-        //     };
-        // }
+        if (element.Value is BoxElement e)
+        {
+            var x = (e.X ?? 0) + (e.PaddingLeft ?? 0);
+            var y = (e.Y ?? 0) + (e.PaddingTop ?? 0);
+            // Justify content
+            if (e.FlexDirection == FlexDirection.Row)
+            {
+                x += e.JustifyContent switch
+                {
+                    JustifyContent.Center => availableWidth / 2,
+                    JustifyContent.FlexEnd => availableWidth,
+                    _ => 0
+                };
+            }
+            if (e.FlexDirection == FlexDirection.Column)
+            {
+                y += e.JustifyContent switch
+                {
+                    JustifyContent.Center => availableHeight / 2,
+                    JustifyContent.FlexEnd => availableHeight,
+                    _ => 0
+                };
+            }
 
-        // if (
-        //     ebv.JustifyContent == JustifyContent.SpaceBetween
-        //     || ebv.JustifyContent == JustifyContent.SpaceAround
-        //     || ebv.JustifyContent == JustifyContent.SpaceEvenly
-        // )
-        // {
-        //     var count =
-        //         childrenCount +
-        //         (ebv.JustifyContent == JustifyContent.SpaceBetween
-        //         ? -1
-        //         : ebv.JustifyContent == JustifyContent.SpaceEvenly
-        //         ? 1
-        //         : 0);
-        //     var horizontalGap = availableWidth / count;
-        //     var verticalGap = availableHeight / count;
+            if (
+                e.JustifyContent == JustifyContent.SpaceBetween
+                || e.JustifyContent == JustifyContent.SpaceAround
+                || e.JustifyContent == JustifyContent.SpaceEvenly
+            )
+            {
+                var count =
+                    childrenCount +
+                    (e.JustifyContent == JustifyContent.SpaceBetween
+                    ? -1
+                    : e.JustifyContent == JustifyContent.SpaceEvenly
+                    ? 1
+                    : 0);
+                var horizontalGap = availableWidth / count;
+                var verticalGap = availableHeight / count;
 
-        //     foreach (var child in Adjacency[e])
-        //     {
+                foreach (var child in Adjacency[element])
+                {
+                    if (e.FlexDirection == FlexDirection.Row)
+                    {
+                        child.Value.X =
+                            (child.Value.X ?? 0) +
+                            x +
+                            (
+                                e.JustifyContent == JustifyContent.SpaceBetween
+                                ? 0
+                                : e.JustifyContent == JustifyContent.SpaceAround
+                                ? horizontalGap / 2
+                                : horizontalGap
+                            );
+                    }
+                    else
+                    {
 
-        //         child.Value.X +=
-        //             x +
-        //             (
-        //                 ebv.JustifyContent == JustifyContent.SpaceBetween
-        //                 ? 0
-        //                 : ebv.JustifyContent == JustifyContent.SpaceAround
-        //                 ? horizontalGap / 2
-        //                 : horizontalGap
-        //             );
+                        child.Value.Y =
+                            (child.Value.Y ?? 0) +
+                            y +
+                            (
+                                e.JustifyContent == JustifyContent.SpaceBetween
+                                ? 0
+                                : e.JustifyContent == JustifyContent.SpaceAround
+                                ? verticalGap / 2
+                                : verticalGap
+                            );
+                    }
 
-        //         child.Value.Y +=
-        //             y +
-        //             (
-        //                 ebv.JustifyContent == JustifyContent.SpaceBetween
-        //                 ? 0
-        //                 : ebv.JustifyContent == JustifyContent.SpaceAround
-        //                 ? verticalGap / 2
-        //                 : verticalGap
-        //             );
+                    if (e.FlexDirection == FlexDirection.Row)
+                        x += (child.Value.Width ?? 0) + horizontalGap;
+                    if (e.FlexDirection == FlexDirection.Column)
+                        y += (child.Value.Height ?? 0) + verticalGap;
 
-        //         if (ebv.FlexDirection == FlexDirection.Row)
-        //             x += (child.Value.Width ?? 0) + horizontalGap;
-        //         if (ebv.FlexDirection == FlexDirection.Column)
-        //             y += (child.Value.Height ?? 0) + verticalGap;
+                }
+            }
+            else
+            {
+                foreach (var child in Adjacency[element])
+                {
+                    if (child.Value is BoxElement c)
+                    {
+                        if (c.Position == FlexPosition.Absolute && c.Display == "none")
+                            continue;
+                        if (e.FlexDirection == FlexDirection.Row)
+                        {
+                            c.X = x;
+                            x +=
+                                (c.Width ?? 0) + (e.Gap ?? 0) +
+                                (c.MarginLeft, c.MarginRight) switch
+                                {
+                                    (ViewNumber ml, ViewNumber mr) => ml + mr,
+                                    (ViewNumber ml, null) => ml,
+                                    (null, ViewNumber mr) => mr,
+                                    (_, _) => 0
 
-        //     }
-        // }
-        // else
-        // {
-        //     foreach (var child in Adjacency[e])
-        //     {
-        //         if (child.Value is BoxElement cbv)
-        //         {
-        //             if (cbv.Position == ViewPosition.Absolute && cbv.Display == "none")
-        //                 continue;
-        //             if (ebv.FlexDirection == FlexDirection.Row)
-        //             {
-        //                 cbv.X = x;
-        //                 x += (cbv.Width ?? 0) + (ebv.Gap ?? 0);
-        //             }
-        //             else
-        //             {
-        //                 cbv.X += x;
-        //             }
-        //             if (ebv.FlexDirection == FlexDirection.Column)
-        //             {
-        //                 cbv.Y = x;
-        //                 y += (cbv.Height ?? 0) + (ebv.Gap ?? 0);
-        //             }
-        //             else
-        //             {
-        //                 cbv.Y += y;
-        //             }
-        //         }
-        //     }
-        // }
+                                };
+                        }
+                        else
+                        {
+                            c.X += x;
+                        }
+                        if (e.FlexDirection == FlexDirection.Column)
+                        {
+                            c.Y = x;
+                            y += (c.Height ?? 0) + (e.Gap ?? 0) +
+                                (c.MarginTop, c.MarginBottom) switch
+                                {
+                                    (ViewNumber mt, ViewNumber mb) => mt + mb,
+                                    (ViewNumber mt, null) => mt,
+                                    (null, ViewNumber mb) => mb,
+                                    (_, _) => 0
+                                };
+                        }
+                        else
+                        {
+                            c.Y += y;
+                        }
+                    }
+                }
+            }
+        }
     }
-    private void ResolveAlignItems(FlexNode e, FlexNode parent)
+    private void ResolveAlignItems(FlexNode element)
     {
-        // foreach (var child in Adjacency[e])
-        // {
-        //     if (child.Value is BoxElement cbv)
-        //     {
-        //         if (cbv.Position == ViewPosition.Absolute)
-        //             continue;
+        if (element.Value is BoxElement e)
+            foreach (var child in Adjacency[element])
+            {
+                if (child.Value is BoxElement cbv)
+                {
+                    if (cbv.Position == FlexPosition.Absolute)
+                        continue;
 
-        //         if (ebv.FlexDirection == FlexDirection.Row)
-        //         {
-        //             if (ebv.AlignItems == FlexAlignment.Center)
-        //             {
-        //                 cbv.Y =
-        //                   ebv.Y + (ebv.Height ?? 0) / 2 - (cbv.Height ?? 0) / 2;
-        //             }
+                    if (e.FlexDirection == FlexDirection.Row)
+                    {
+                        if (e.AlignItems == FlexAlignment.Center)
+                        {
+                            cbv.Y =
+                              e.Y + (e.Height ?? 0) / 2 - (cbv.Height ?? 0) / 2;
+                        }
 
-        //             if (ebv.AlignItems == FlexAlignment.FlexEnd)
-        //             {
-        //                 cbv.Y =
-        //                   ebv.Y +
-        //                   (ebv.Height ?? 0) -
-        //                   (cbv.Height ?? 0) -
-        //                   (ebv.PaddingBottom ?? 0);
-        //             }
+                        if (e.AlignItems == FlexAlignment.FlexEnd)
+                        {
+                            cbv.Y =
+                              e.Y +
+                              (e.Height ?? 0) -
+                              (cbv.Height ?? 0) -
+                              (e.PaddingBottom ?? 0);
+                        }
 
-        //             if (ebv.AlignItems == FlexAlignment.Stretch && cbv.Height is null)
-        //             {
-        //                 cbv.Height =
-        //                   ebv.Height - ebv.PaddingTop - ebv.PaddingBottom;
-        //             }
-        //         }
-        //         if (ebv.FlexDirection == FlexDirection.Column)
-        //         {
-        //             if (ebv.AlignItems == FlexAlignment.Center)
-        //             {
-        //                 cbv.X =
-        //                   ebv.X + (ebv.Width ?? 0) / 2 - (cbv.Width ?? 0) / 2;
-        //             }
+                        if (e.AlignItems == FlexAlignment.Stretch && cbv.Height is null)
+                        {
+                            cbv.Height =
+                              e.Height - e.PaddingTop - e.PaddingBottom;
+                        }
+                    }
+                    if (e.FlexDirection == FlexDirection.Column)
+                    {
+                        if (e.AlignItems == FlexAlignment.Center)
+                        {
+                            cbv.X =
+                              e.X + (e.Width ?? 0) / 2 - (cbv.Width ?? 0) / 2;
+                        }
 
-        //             if (ebv.AlignItems == FlexAlignment.FlexEnd)
-        //             {
-        //                 cbv.X =
-        //                   ebv.X +
-        //                   (ebv.Width ?? 0) -
-        //                   (cbv.Width ?? 0) -
-        //                   (ebv.PaddingRight ?? 0);
-        //             }
+                        if (e.AlignItems == FlexAlignment.FlexEnd)
+                        {
+                            cbv.X =
+                              e.X +
+                              (e.Width ?? 0) -
+                              (cbv.Width ?? 0) -
+                              (e.PaddingRight ?? 0);
+                        }
 
-        //             if (ebv.AlignItems == FlexAlignment.Stretch && cbv.Width is null)
-        //             {
-        //                 cbv.Width =
-        //                   (ebv.Width ?? 0) - (ebv.PaddingLeft ?? 0) - (ebv.PaddingRight ?? 0);
-        //             }
-        //         }
+                        if (e.AlignItems == FlexAlignment.Stretch && cbv.Width is null)
+                        {
+                            cbv.Width =
+                              (e.Width ?? 0) - (e.PaddingLeft ?? 0) - (e.PaddingRight ?? 0);
+                        }
+                    }
 
-        //     }
-        // }
+                }
+            }
     }
 }
