@@ -451,54 +451,54 @@ public partial class FlexTree
         if (element.Value is BoxElement e)
             foreach (var child in Adjacency[element])
             {
-                if (child.Value is BoxElement cbv)
+                if (child.Value is BoxElement c)
                 {
-                    if (cbv.Position == FlexPosition.Absolute)
+                    if (c.Position == FlexPosition.Absolute)
                         continue;
 
                     if (e.FlexDirection == FlexDirection.Row)
                     {
                         if (e.AlignItems == FlexAlignment.Center)
                         {
-                            cbv.Y =
-                              e.Y + (e.Height ?? 0) / 2 - (cbv.Height ?? 0) / 2;
+                            c.Y =
+                              e.Y + (e.Height ?? 0) / 2 - (c.Height ?? 0) / 2;
                         }
 
                         if (e.AlignItems == FlexAlignment.FlexEnd)
                         {
-                            cbv.Y =
+                            c.Y =
                               e.Y +
                               (e.Height ?? 0) -
-                              (cbv.Height ?? 0) -
+                              (c.Height ?? 0) -
                               (e.PaddingBottom ?? 0);
                         }
 
-                        if (e.AlignItems == FlexAlignment.Stretch && cbv.Height is null)
+                        if (e.AlignItems == FlexAlignment.Stretch)
                         {
-                            cbv.Height =
-                              e.Height - e.PaddingTop - e.PaddingBottom;
+                            c.Height =
+                              e.Height - (e.PaddingTop ?? 0) - (e.PaddingBottom ?? 0);
                         }
                     }
                     if (e.FlexDirection == FlexDirection.Column)
                     {
                         if (e.AlignItems == FlexAlignment.Center)
                         {
-                            cbv.X =
-                              e.X + (e.Width ?? 0) / 2 - (cbv.Width ?? 0) / 2;
+                            c.X =
+                              e.X + (e.Width ?? 0) / 2 - (c.Width ?? 0) / 2;
                         }
 
                         if (e.AlignItems == FlexAlignment.FlexEnd)
                         {
-                            cbv.X =
+                            c.X =
                               e.X +
                               (e.Width ?? 0) -
-                              (cbv.Width ?? 0) -
+                              (c.Width ?? 0) -
                               (e.PaddingRight ?? 0);
                         }
 
-                        if (e.AlignItems == FlexAlignment.Stretch && cbv.Width is null)
+                        if (e.AlignItems == FlexAlignment.Stretch)
                         {
-                            cbv.Width =
+                            c.Width =
                               (e.Width ?? 0) - (e.PaddingLeft ?? 0) - (e.PaddingRight ?? 0);
                         }
                     }

@@ -7,6 +7,7 @@ public class BoxElement : FlexElement
     public FlexDirection? FlexDirection { get; set; }
     public JustifyContent? JustifyContent { get; set; }
     public FlexWrap? FlexWrap { get; set; }
+    public FlexContentAlignment? AlignContent { get; set; }
     public FlexAlignment? AlignItems { get; set; }
     public FlexAlignment? AlignSelf { get; set; }
     public ViewNumber? Grow { get; set; }
@@ -98,6 +99,7 @@ public class BoxElement : FlexElement
         FlexDirection? flexDirection = null,
         JustifyContent? justifyContent = null,
         FlexWrap? flexWrap = null,
+        FlexContentAlignment? alignContent = null,
         FlexAlignment? alignItems = null,
         FlexAlignment? alignSelf = null,
         ViewNumber? grow = null,
@@ -124,6 +126,7 @@ public class BoxElement : FlexElement
         FlexDirection = flexDirection ?? Flexbox.FlexDirection.Row;
         JustifyContent = justifyContent ?? Flexbox.JustifyContent.FlexStart;
         FlexWrap = flexWrap ?? Flexbox.FlexWrap.NoWrap;
+        AlignContent = alignContent ?? FlexContentAlignment.FlexStart;
         AlignItems = alignItems;
         AlignSelf = alignSelf;
         Grow = grow ?? 0;
