@@ -118,14 +118,14 @@ public sealed partial class FlexTree
                     element.Value.ZIndex = parent?.ZIndex ?? 0;
                 }
                 
-                ResolveSpaceDistribution(element, out ViewNumber availableWidth, out ViewNumber availableHeight, ref childrenCount);
+                ResolveSpaceDistribution(element, out var availableWidth, out var availableHeight, out var totalFlex, out var totalShrink, ref childrenCount);
                 e.X += e.MarginLeft ?? 0;
                 e.Y += e.MarginTop ?? 0;
 
 
                 // Determine positions.
 
-                ResolveJustifyContent(element, in availableWidth, in availableHeight, ref childrenCount);
+                ResolveJustifyContent(element, in availableWidth, in availableHeight, in totalFlex, in totalShrink, ref childrenCount);
 
                 ResolveAlignItems(element);
 

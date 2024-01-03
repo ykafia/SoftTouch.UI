@@ -6,9 +6,11 @@ public class BoxElement : FlexElement
 {
     public FlexDirection? FlexDirection { get; set; }
     public JustifyContent? JustifyContent { get; set; }
+    public FlexWrap? FlexWrap { get; set; }
     public FlexAlignment? AlignItems { get; set; }
     public FlexAlignment? AlignSelf { get; set; }
     public ViewNumber? Grow { get; set; }
+    public ViewNumber? Shrink { get; set; }
     public FlexPosition? Position { get; set; }
     public ViewNumber? Gap { get; set; }
     public string? Display { get; set; }
@@ -95,9 +97,11 @@ public class BoxElement : FlexElement
         string? backgroundColor = null,
         FlexDirection? flexDirection = null,
         JustifyContent? justifyContent = null,
+        FlexWrap? flexWrap = null,
         FlexAlignment? alignItems = null,
         FlexAlignment? alignSelf = null,
         ViewNumber? grow = null,
+        ViewNumber? shrink = null,
         FlexPosition? position = null,
         ViewNumber? gap = null,
         string? display = null,
@@ -118,10 +122,12 @@ public class BoxElement : FlexElement
     ) : base(id, x, y, width, height, zindex, backgroundColor)
     {
         FlexDirection = flexDirection ?? Flexbox.FlexDirection.Row;
-        JustifyContent = justifyContent;
+        JustifyContent = justifyContent ?? Flexbox.JustifyContent.FlexStart;
+        FlexWrap = flexWrap ?? Flexbox.FlexWrap.NoWrap;
         AlignItems = alignItems;
         AlignSelf = alignSelf;
         Grow = grow ?? 0;
+        Shrink = shrink ?? 1;
         Position = position ?? FlexPosition.Relative;
         Gap = gap;
         Display = display;
@@ -137,9 +143,9 @@ public class BoxElement : FlexElement
         MarginRight = marginRight;
         MarginTop = marginTop;
         MarginBottom = marginBottom;
-        if(margin != null)
+        if (margin != null)
             Margin = margin;
-        if(padding != null)
+        if (padding != null)
             Padding = padding;
     }
     public override string ToString()

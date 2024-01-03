@@ -147,70 +147,78 @@ public partial class FlexTree
         {
             e.Y = (e.Position, p.FlexDirection, e.AlignSelf) switch
             {
+                (FlexPosition.Relative, FlexDirection.Row, FlexAlignment.Center) => (e.Y ?? 0) + (p.Height ?? 0) / 2 - (e.Height ?? 0 / 2),
+                (FlexPosition.Relative, FlexDirection.Row, FlexAlignment.FlexEnd) => (e.Y ?? 0) + (p.Height ?? 0) - (e.Height ?? 0 / 2) - (p.PaddingBottom ?? 0) - (p.PaddingTop ?? 0),
                 (FlexPosition.Absolute, FlexDirection.Row, FlexAlignment.Center) => (e.Y ?? 0) + (p.Height ?? 0) / 2 - (e.Height ?? 0 / 2),
                 (FlexPosition.Absolute, FlexDirection.Row, FlexAlignment.FlexEnd) => (e.Y ?? 0) + (p.Height ?? 0) - (e.Height ?? 0 / 2) - (p.PaddingBottom ?? 0) - (p.PaddingTop ?? 0),
                 _ => e.Y
             };
-            if (e.Position == FlexPosition.Absolute && p.FlexDirection == FlexDirection.Row && e.AlignSelf == FlexAlignment.Stretch)
+            if (p.FlexDirection == FlexDirection.Row && e.AlignSelf == FlexAlignment.Stretch)
                 e.Height = (p.Height ?? 0) + (p.PaddingBottom ?? 0) + (p.PaddingTop ?? 0);
             e.X = (e.Position, p.FlexDirection, e.AlignSelf) switch
             {
+                (FlexPosition.Relative, FlexDirection.Column, FlexAlignment.Center) => (e.X ?? 0) + (p.Width ?? 0) / 2 - (e.Width ?? 0 / 2),
+                (FlexPosition.Relative, FlexDirection.Column, FlexAlignment.FlexEnd) => (e.X ?? 0) + (p.Width ?? 0) - (e.Width ?? 0 / 2) - (p.PaddingLeft ?? 0) - (p.PaddingRight ?? 0),
                 (FlexPosition.Absolute, FlexDirection.Column, FlexAlignment.Center) => (e.X ?? 0) + (p.Width ?? 0) / 2 - (e.Width ?? 0 / 2),
                 (FlexPosition.Absolute, FlexDirection.Column, FlexAlignment.FlexEnd) => (e.X ?? 0) + (p.Width ?? 0) - (e.Width ?? 0 / 2) - (p.PaddingLeft ?? 0) - (p.PaddingRight ?? 0),
                 _ => e.X
             };
-            if (e.Position == FlexPosition.Absolute && p.FlexDirection == FlexDirection.Column && e.AlignSelf == FlexAlignment.Stretch)
+            if (p.FlexDirection == FlexDirection.Column && e.AlignSelf == FlexAlignment.Stretch)
                 e.Width = (p.Width ?? 0) + (p.PaddingLeft ?? 0) + (p.PaddingRight ?? 0);
         }
     }
 
 
-    void ResolveSpaceDistribution(FlexNode element, out ViewNumber availableWidth, out ViewNumber availableHeight, ref int childrenCount)
+    void ResolveSpaceDistribution(FlexNode element, out ViewNumber availableWidth, out ViewNumber availableHeight, out ViewNumber totalFlex, out ViewNumber totalShrink, ref int childrenCount)
     {
         // Distribute space
-        ViewNumber totalFlex = 0;
+        totalFlex = 0;
+        totalShrink = 0;
         availableWidth = element.Value.Width ?? 0;
         availableHeight = element.Value.Height ?? 0;
         if (element.Value is BoxElement e)
         {
             foreach (var child in Adjacency[element])
             {
-                if (child.Value is BoxElement c)
+                if (child.Value is BoxElement c && c.Position == FlexPosition.Relative)
                 {
-                    if (c.Position == FlexPosition.Relative)
+                    childrenCount += 1;
+                    if (e.FlexDirection == FlexDirection.Row && c.Grow >= 0)
                     {
-                        childrenCount += 1;
-                        if (e.FlexDirection == FlexDirection.Row && c.Grow == 0)
-                        {
-                            availableWidth -= (c.Width ?? 0) +
-                                (c.MarginLeft, c.MarginRight) switch
-                                {
-                                    (ViewNumber ml, ViewNumber mr) => ml + mr,
-                                    (ViewNumber ml, null) => ml,
-                                    (null, ViewNumber mr) => mr,
-                                    (_, _) => 0
+                        availableWidth -= (c.Width ?? 0) +
+                            (c.MarginLeft, c.MarginRight) switch
+                            {
+                                (ViewNumber ml, ViewNumber mr) => ml + mr,
+                                (ViewNumber ml, null) => ml,
+                                (null, ViewNumber mr) => mr,
+                                (_, _) => 0
 
-                                };
-                        }
-                        if (e.FlexDirection == FlexDirection.Column && c.Grow == 0 && c.Position == FlexPosition.Relative)
-                            availableHeight -= (c.Height ?? 0) +
-                                (c.MarginTop, c.MarginBottom) switch
-                                {
-                                    (ViewNumber mt, ViewNumber mr) => mt + mr,
-                                    (ViewNumber mt, null) => mt,
-                                    (null, ViewNumber mb) => mb,
-                                    (_, _) => 0
-
-                                };
-
-                        if (e.FlexDirection == FlexDirection.Row && c.Grow > 0)
-                            totalFlex += c.Grow ?? 0;
-                        if (e.FlexDirection == FlexDirection.Column && c.Grow > 0)
-                            totalFlex += c.Grow ?? 0;
+                            };
                     }
+                    if (e.FlexDirection == FlexDirection.Column && c.Grow >= 0)
+                        availableHeight -= (c.Height ?? 0) +
+                            (c.MarginTop, c.MarginBottom) switch
+                            {
+                                (ViewNumber mt, ViewNumber mr) => mt + mr,
+                                (ViewNumber mt, null) => mt,
+                                (null, ViewNumber mb) => mb,
+                                (_, _) => 0
 
+                            };
 
+                    if (e.FlexDirection == FlexDirection.Row && c.Grow > 0)
+                        totalFlex += c.Grow ?? 0;
+                    if (e.FlexDirection == FlexDirection.Column && c.Grow > 0)
+                        totalFlex += c.Grow ?? 0;
+
+                    if (e.FlexDirection == FlexDirection.Row && c.Shrink > 0)
+                        totalShrink += c.Shrink ?? 0;
+                    if (e.FlexDirection == FlexDirection.Column && c.Shrink > 0)
+                        totalShrink += c.Shrink ?? 0;
                 }
+
+
+
             }
 
             availableWidth -=
@@ -231,35 +239,83 @@ public partial class FlexTree
                 e.JustifyContent != JustifyContent.SpaceEvenly
                     ? (childrenCount - 1) * (e.Gap ?? 0)
                     : 0);
-            foreach (var child in Adjacency[element])
-            {
-                if (child.Value is BoxElement c)
-                {
-                    if (
-                        e.FlexDirection == FlexDirection.Row && c.Grow > 0
-                        && e.JustifyContent != JustifyContent.SpaceBetween
-                        && e.JustifyContent != JustifyContent.SpaceAround
-                        && e.JustifyContent != JustifyContent.SpaceEvenly
-                        )
-                    {
-                        c.Width = (c.Width ?? 0) + (c.Grow ?? 0) / totalFlex * availableWidth;
-                    }
 
-                    if (
-                        e.FlexDirection == FlexDirection.Column && c.Grow > 0
-                        && e.JustifyContent != JustifyContent.SpaceBetween
-                        && e.JustifyContent != JustifyContent.SpaceAround
-                        && e.JustifyContent != JustifyContent.SpaceEvenly
-                        )
+            if (e.FlexWrap == FlexWrap.NoWrap)
+            {
+                foreach (var child in Adjacency[element])
+                {
+                    if (child.Value is BoxElement c)
                     {
-                        c.Height = (c.Height ?? 0) + (c.Grow ?? 0) / totalFlex * availableHeight;
+                        if (e.JustifyContent != null && (!e.JustifyContent.ToString().StartsWith("Space") || totalFlex > 0))
+                        {
+                            if (availableWidth >= 0)
+                            {
+                                if (e.FlexDirection == FlexDirection.Row && c.Grow > 0)
+                                {
+                                    c.Width = (c.Width ?? 0) + (c.Grow ?? 0) / totalFlex * availableWidth;
+                                }
+                            }
+                            else
+                            {
+                                if (e.FlexDirection == FlexDirection.Row && c.Shrink > 0)
+                                {
+                                    c.Width = (c.Width ?? 0) - (c.Shrink ?? 0) / totalShrink * ViewNumber.Abs(availableWidth);
+                                }
+                            }
+                            if (availableHeight >= 0)
+                            {
+
+                                if (e.FlexDirection == FlexDirection.Column && c.Grow > 0)
+                                {
+                                    c.Height = (c.Height ?? 0) + (c.Grow ?? 0) / totalShrink * availableHeight;
+                                }
+                            }
+                            else
+                            {
+                                if (e.FlexDirection == FlexDirection.Column && c.Shrink > 0)
+                                {
+                                    c.Height = (c.Height ?? 0) - (c.Shrink ?? 0) / totalFlex * ViewNumber.Abs(availableHeight);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (availableWidth < 0)
+                            {
+                                if (e.FlexDirection == FlexDirection.Row && c.Shrink > 0)
+                                {
+                                    c.Width = (c.Width ?? 0) - (c.Shrink ?? 0) / totalShrink * ViewNumber.Abs(availableWidth);
+                                }
+                            }
+                            if (availableHeight < 0)
+                            {
+                                if (e.FlexDirection == FlexDirection.Column && c.Shrink > 0)
+                                {
+                                    c.Height = (c.Height ?? 0) - (c.Shrink ?? 0) / totalFlex * ViewNumber.Abs(availableHeight);
+                                    availableHeight = 0;
+                                }
+                            }
+                        }
                     }
                 }
+                if (availableWidth < 0)
+                    availableWidth = 0;
+                if (availableHeight < 0)
+                    availableHeight = 0;
+            }
+            else 
+            {
+                // availableWidth = 0;
+                // availableHeight = 0;
+                // foreach (var child in Adjacency[element])
+                // {
+                    
+                // }
             }
         }
     }
 
-    void ResolveJustifyContent(FlexNode element, in ViewNumber availableWidth, in ViewNumber availableHeight, ref int childrenCount)
+    void ResolveJustifyContent(FlexNode element, in ViewNumber availableWidth, in ViewNumber availableHeight, in ViewNumber totalFlex, in ViewNumber totalShrink, ref int childrenCount)
     {
 
         if (element.Value is BoxElement e)
@@ -285,11 +341,14 @@ public partial class FlexTree
                     _ => 0
                 };
             }
-
             if (
-                e.JustifyContent == JustifyContent.SpaceBetween
-                || e.JustifyContent == JustifyContent.SpaceAround
-                || e.JustifyContent == JustifyContent.SpaceEvenly
+                totalFlex == 0
+                &&
+                (
+                    e.JustifyContent == JustifyContent.SpaceBetween
+                    || e.JustifyContent == JustifyContent.SpaceAround
+                    || e.JustifyContent == JustifyContent.SpaceEvenly
+                )
             )
             {
                 var count =
@@ -384,6 +443,7 @@ public partial class FlexTree
                     }
                 }
             }
+
         }
     }
     private void ResolveAlignItems(FlexNode element)
