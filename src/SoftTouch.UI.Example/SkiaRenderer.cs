@@ -44,12 +44,12 @@ public class SkiaRenderer : IFlexRenderer
                 };
                 Canvas.DrawRect(rect, paint);
             }
-            else if(view is TextElement tv)
+            else if(view is TextStyle tv)
             {
                 #if DEBUG
                 Console.WriteLine($"{tv} {tv.X} {tv.Y} | {tv.Text}");
                 #endif
-                Canvas.DrawText(tv.Text, new((float)tv.X,(float)(tv.Y + tv.FontSize)),new(){
+                Canvas.DrawText(tv.Text, new((float)(tv.X ?? 0),(float)(tv.Y + tv.FontSize ?? 0)),new(){
                     Color = SKColor.Parse(tv.Color),
                     TextSize = (float?)tv.FontSize ?? 0,
                 });

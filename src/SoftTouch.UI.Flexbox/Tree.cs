@@ -5,7 +5,7 @@ using System.Runtime.InteropServices.Marshalling;
 namespace SoftTouch.UI.Flexbox;
 
 
-public sealed record FlexNode(FlexElement Value, FlexNode Parent, FlexTree Tree)
+public sealed record FlexNode(FlexStyle Value, FlexNode Parent, FlexTree Tree)
 {
     public FlexNode? FirstChild => Tree.Adjacency[this].Count > 0 ? Tree.Adjacency[this][0] : null;
     public FlexNode? LastChild => Tree.Adjacency[this].Count > 0 ? Tree.Adjacency[this][^1] : null;
@@ -35,7 +35,7 @@ public sealed record FlexNode(FlexElement Value, FlexNode Parent, FlexTree Tree)
 public sealed partial class FlexTree
 {
     public FlexNode? Root { get; private set; }
-    public Dictionary<FlexElement, FlexNode> Lookup { get; } = [];
+    public Dictionary<FlexStyle, FlexNode> Lookup { get; } = [];
     public Dictionary<FlexNode, List<FlexNode>> Adjacency { get; } = [];
     public ReverseOrderer ReverseOrder => new(this);
 
@@ -47,7 +47,7 @@ public sealed partial class FlexTree
         Adjacency[Root] = [];
         RecurseFill(view);
     }
-    void RecurseFill(FlexView view, FlexElement? parent = null)
+    void RecurseFill(FlexView view, FlexStyle? parent = null)
     {
         if (view is BoxView bv)
         {
@@ -130,8 +130,8 @@ public sealed partial class FlexTree
                 ResolveAlignItems(element);
 
 
-                e.X = Math.Round((double)e.X);
-                e.Y = Math.Round((double)e.Y);
+                e.X = Math.Round((double)(e.X ?? 0));
+                e.Y = Math.Round((double)(e.Y ?? 0));
                 e.Width = Math.Round((double)(e.Width ?? 0));
                 e.Height = Math.Round((double)(e.Height ?? 0));
             }
@@ -140,9 +140,9 @@ public sealed partial class FlexTree
     }
 
 
-    public IEnumerator<FlexElement> GetEnumerator() => BreadthFirstOrder().OrderBy(x => x.ZIndex).GetEnumerator();
+    public IEnumerator<FlexStyle> GetEnumerator() => BreadthFirstOrder().OrderBy(x => x.ZIndex).GetEnumerator();
 
-    public IEnumerable<FlexElement> BreadthFirstOrder()
+    public IEnumerable<FlexStyle> BreadthFirstOrder()
     {
         if (Root == null)
         {
@@ -187,7 +187,7 @@ public sealed partial class FlexTree
     public readonly ref struct ReverseOrderer(FlexTree tree)
     {
         readonly FlexTree tree = tree;
-        public readonly IEnumerator<FlexElement> GetEnumerator() => tree.BreadthFirstOrder().OrderBy(x => x.ZIndex).Reverse().GetEnumerator();
+        public readonly IEnumerator<FlexStyle> GetEnumerator() => tree.BreadthFirstOrder().OrderBy(x => x.ZIndex).Reverse().GetEnumerator();
     }
 }
 

@@ -3,18 +3,43 @@ using SixLabors.ImageSharp;
 
 namespace SoftTouch.UI.Flexbox;
 
-public class TextElement : FlexElement
+public class TextStyle : FlexStyle
 {
-    string _text;
-    string _fontFamily;
-    ViewNumber _size;
-    public string Text { get => _text; set { _text = value; UpdateSize(); } }
-    public string FontFamily { get => _fontFamily; set {_fontFamily = value; UpdateSize();} }
-    public ViewNumber FontSize { get => _size; set { _size = value; UpdateSize(); } }
-    public string Color { get; set; }
+    public string? Text 
+    { 
+        get => styleData.GetProperty<string>(nameof(Text)); 
+        set 
+        { 
+            styleData.SetProperty(nameof(Text), value); 
+            UpdateSize(); 
+        } 
+    }
+    public string? FontFamily
+    { 
+        get => styleData.GetProperty<string>(nameof(FontFamily)); 
+        set 
+        { 
+            styleData.SetProperty(nameof(FontFamily), value); 
+            UpdateSize(); 
+        } 
+    }
+    public ViewNumber? FontSize
+    { 
+        get => styleData.GetProperty<ViewNumber>(nameof(FontSize)); 
+        set 
+        { 
+            styleData.SetProperty(nameof(FontSize), value); 
+            UpdateSize(); 
+        } 
+    }
+    public string? Color
+    { 
+        get => styleData.GetProperty<string>(nameof(Color)); 
+        set => styleData.SetProperty(nameof(Color), value);
+    }
 
 
-    public TextElement(
+    public TextStyle(
         string text = "",
         string fontFamily = "Fira Sans",
         ViewNumber? fontSize = null,
@@ -22,16 +47,16 @@ public class TextElement : FlexElement
         string? id = null
     ) : base(id: id)
     {
-        _text = text;
-        _fontFamily = fontFamily;
-        _size = fontSize ?? 12;
+        Text = text;
+        FontFamily = fontFamily;
+        FontSize = fontSize ?? 12;
         Color = color;
         UpdateSize();
     }
 
     public void UpdateSize()
     {
-        var size = TextMeasurer.MeasureSize(Text, new(SystemFonts.CreateFont(FontFamily, (float)FontSize)));
+        var size = TextMeasurer.MeasureSize(Text ?? "", new(SystemFonts.CreateFont(FontFamily ?? "Roboto", (float)(FontSize ?? 16))));
         Width = size.Width;
         Height = size.Height;
     }
@@ -40,8 +65,6 @@ public class TextElement : FlexElement
     {
         return $"[color : {Color}, size : {FontSize}] \"{Text}\"";
     }
-
-
 }
 
 

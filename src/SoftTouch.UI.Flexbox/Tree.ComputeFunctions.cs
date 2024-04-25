@@ -36,7 +36,7 @@ public partial class FlexTree
                         if (cbv.Position == FlexPosition.Relative)
                             childrenCount += 1;
                     }
-                    else if (child.Value is TextElement ctv)
+                    else if (child.Value is TextStyle ctv)
                         if (ctv.Width is not null && ctv.Width?.Kind == ViewNumberKind.Number)
                             e.Value.Width = (e.Value.Width ?? 0) + ctv.Width;
                 }
@@ -72,7 +72,7 @@ public partial class FlexTree
                         if (cbv.Position == FlexPosition.Relative)
                             childrenCount += 1;
                     }
-                    else if (child.Value is TextElement ctv)
+                    else if (child.Value is TextStyle ctv)
                         if (ctv.Height is not null && ctv.Height?.Kind == ViewNumberKind.Number)
                             e.Value.Height = (e.Value.Height ?? 0) + ctv.Height;
                 }
@@ -246,7 +246,7 @@ public partial class FlexTree
                 {
                     if (child.Value is BoxElement c)
                     {
-                        if (e.JustifyContent != null && (!e.JustifyContent.ToString().StartsWith("Space") || totalFlex > 0))
+                        if (e.JustifyContent != null && (!e.JustifyContent.Value.ToString().StartsWith("Space") || totalFlex > 0))
                         {
                             if (availableWidth >= 0)
                             {
