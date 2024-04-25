@@ -11,7 +11,7 @@ public sealed class StyleData
     readonly Dictionary<string, string> properties = [];
     internal T? GetProperty<T>(string propertyName) where T : IParsable<T>
     {
-        if(properties.TryGetValue(propertyName, out var value))
+        if(properties.TryGetValue(propertyName, out var value) && !string.IsNullOrEmpty(value))
             return T.Parse(value, null);
         else return default;
     }
@@ -19,7 +19,7 @@ public sealed class StyleData
         => properties[propertyName] = value?.ToString() ?? "";
     internal T? GetEnumProperty<T>(string propertyName) where T : struct, Enum
     {
-        if(properties.TryGetValue(propertyName, out var value)) 
+        if(properties.TryGetValue(propertyName, out var value) && !string.IsNullOrEmpty(value)) 
             return Enum.Parse<T>(value);
         else return default;
     }
